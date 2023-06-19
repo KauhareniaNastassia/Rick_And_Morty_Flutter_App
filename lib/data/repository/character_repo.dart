@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_app_test/data/models/character.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,7 +15,7 @@ class CharacterRepo {
 
       return Character.fromJson(jsonResult);
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception('EXCEPTION ${e.toString()}');
     }
   }
 }
