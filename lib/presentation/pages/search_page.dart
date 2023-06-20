@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app_test/bloc/character_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../data/models/character.dart';
@@ -24,12 +26,18 @@ class _SearchPageState extends State<SearchPage> {
   final RefreshController refreshController = RefreshController();
   bool _isPagination = false;
 
+  late Timer searchDebounce;
+
+  final _storage = HydratedBloc.storage;
+
   @override
   void initState() {
-    if (_currentResults.isEmpty) {
-      context
-          .read<CharacterBloc>()
-          .add(const CharacterEvent.fetch(name: '', page: 1));
+    if (_storage.runtimeType.toString().isEmpty) {
+      if (_currentResults.isEmpty) {
+        context
+            .read<CharacterBloc>()
+            .add(const CharacterEvent.fetch(name: '', page: 1));
+      }
     }
     super.initState();
   }
@@ -63,9 +71,12 @@ class _SearchPageState extends State<SearchPage> {
               _currentResults = [];
               _currentSearchStr = value;
 
-              context
-                  .read<CharacterBloc>()
-                  .add(CharacterEvent.fetch(name: value, page: 1));
+              searchDebounce?.cancel();
+              searchDebounce = Timer(const Duration(milliseconds: 500), () {
+                context
+                    .read<CharacterBloc>()
+                    .add(CharacterEvent.fetch(name: value, page: 1));
+              });
             },
           ),
         ),
@@ -99,6 +110,7 @@ class _SearchPageState extends State<SearchPage> {
                 _isPagination = false;
               } else {
                 _currentResults = List.from(_currentCharacter.results);
+                //_currentResults = _currentCharacter.results;
               }
 
               return _currentResults.isNotEmpty

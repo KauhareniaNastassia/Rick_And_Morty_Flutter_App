@@ -512,7 +512,7 @@ class __$$_ResultsCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$_Results implements _Results {
-  const _$_Results(
+  _$_Results(
       {required this.id,
       required this.name,
       required this.status,
@@ -574,7 +574,7 @@ class _$_Results implements _Results {
 }
 
 abstract class _Results implements Results {
-  const factory _Results(
+  factory _Results(
       {required final int id,
       required final String name,
       required final String status,
